@@ -1,8 +1,7 @@
 export async function onRequest(context) {
   try {
-    // Query all location rows from your D1 database
     const { results } = await context.env.DB
-      .prepare("SELECT * FROM locations ORDER BY id ASC")
+      .prepare("SELECT * FROM Maps WHERE hide = 0 ORDER BY id ASC")
       .all();
 
     return new Response(JSON.stringify(results), {
