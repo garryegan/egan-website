@@ -1,0 +1,45 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Travel Map</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="/css/main.css">
+</head>
+<body>
+    <nav>
+        <ul>
+            <li><a href="/index.html">Home</a></li>
+            <li><a href="/events.html">Events</a></li>
+            <li><a href="/markets.html">Markets</a></li>
+            <li><a href="/restaurants.html">Restaurants</a></li>
+            <li><a href="/cooking.html">Cooking</a></li>
+            <li><a href="/map.html">Map</a></li>
+        </ul>
+    </nav>
+
+    <div class="main-content container">
+        <h1>Travel Map</h1>
+
+        <div class="map-wrapper">
+            <div id="map"></div>
+            <div id="mapCaption">Explore trips and locations using the legend.</div>
+
+               <button id="legendToggle">Legend</button>
+
+            <div id="legend" style="display:none;">
+            <!-- JS will inject <h3>Trips</h3> and legend items -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Static loader (if you use it for shared config / data) -->
+    <script src="/js/script_loader_static.js"></script>
+
+    <!-- Google Maps API (callback required) -->
+    <script src="/js/load-maps.js"></script>
+
+    <!-- Your map logic (defines initMap, builds markers, legend, etc.) -->
+    <script src="/js/map.js"></script>
+</body>
+</html>
