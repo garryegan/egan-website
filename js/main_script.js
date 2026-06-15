@@ -1,5 +1,5 @@
 // ============================================================
-//  main_script.js — Cloudflare‑Ready, HostPapa‑Accurate Table Engine
+//  main_script.js — D1-Compatible Table Engine
 // ============================================================
 
 // Run immediately when the script is loaded.
@@ -14,18 +14,45 @@
     if (!table) return;
 
     const tableName = table.dataset.table;
-    const section = window.allData[tableName];
+    const rows = window.allData[tableName];
 
-    if (!section || !section.columns || !section.data) {
-        console.error("❌ No table data found for:", tableName);
+    if (!Array.isArray(rows) || rows.length === 0) {
+        console.error("❌ No D1 data found for:", tableName);
         return;
     }
+
+    // Build a synthetic "section" object to match the old structure
+    const section = {
+        columns: buildColumnsFromRows(rows),
+        data: rows
+    };
 
     // Add table‑type class so CSS rules apply
     table.classList.add(tableName.toLowerCase());
 
     buildTable(table, tableName, section);
 })();
+
+// ============================================================
+//  Build Columns Dynamically (D1 version)
+// ============================================================
+function buildColumnsFromRows(rows) {
+    const first = rows[0];
+
+    return Object.keys(first).map(key => ({
+        original: key,
+        readable: toReadableLabel(key)
+    }));
+}
+
+function toReadableLabel(key) {
+    return key
+        .replace(/_/g, " ")
+        .replace(/([A-Z])/g, " $1")
+        .replace(/\s+/g, " ")
+        .replace(/^./, c => c.toUpperCase())
+        .trim();
+}
 
 // ============================================================
 //  Build Table
@@ -57,10 +84,7 @@ function buildTable(table, tableName, section) {
         }
 
         th.textContent = label;
-
-        // ⭐ PATCH: Tag column identity for CSS targeting
         th.dataset.col = col.original;
-
         th.classList.add("sortable-header");
         th.style.cursor = "pointer";
 
@@ -80,12 +104,10 @@ function buildTable(table, tableName, section) {
     // 4. Initial sort rules
     // ------------------------------------------------------------
     if (tableName === "Cooking") {
-        // Sort by rank ascending
         currentData.sort((a, b) => Number(a.rank) - Number(b.rank));
     }
 
     if (tableName === "Events") {
-        // Sort by EventDate descending (latest first)
         currentData.sort((a, b) => new Date(b.EventDate) - new Date(a.EventDate));
     }
 
@@ -135,7 +157,6 @@ function buildTable(table, tableName, section) {
                 const key = col.original;
                 const value = row[key] ?? "";
 
-                // ⭐ PATCH: Tag column identity for CSS targeting
                 td.dataset.col = col.original;
 
                 // Cooking: hyperlink on NAME column using URL column

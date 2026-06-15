@@ -1,17 +1,62 @@
 export async function onRequest(context) {
-  try {
-    const { results } = await context.env.DB
-      .prepare("SELECT * FROM Maps WHERE hide = 0 ORDER BY id ASC")
-      .all();
+    const db = context.env.DB;
 
-    return new Response(JSON.stringify(results), {
-      headers: { "Content-Type": "application/json" }
+    // 1) Load all map points
+    const points = await db.prepare(
+        `SELECT 
+            name,
+            Country,
+            latitude,
+            longitude,
+            TripID,
+            hide
+         FROM maps
+         WHERE hide IS NULL OR hide = 0`
+    ).all();
+
+    // Build GeoJSON FeatureCollection
+    const features = points.results.map(row => ({
+        type: "Feature",
+        geometry: {
+            type: "Point",
+            coordinates: [row.longitude, row.latitude]
+        },
+        properties: {
+            name: row.name,
+            country: row.Country,
+            trip_id: row.TripID
+        }
+    }));
+
+    const map_data = {
+        type: "FeatureCollection",
+        features
+    };
+
+    // 2) Load trips from Trips (formerly IconColour)
+    const trips = await db.prepare(
+        `SELECT 
+            TripID,
+            trip,
+            icon_colour AS color,
+			description
+         FROM Trips
+         ORDER BY TripID`
+    ).all();
+
+    // 3) DISTINCT countries visited
+    const countries = await db.prepare(
+        `SELECT DISTINCT Country 
+         FROM maps
+         WHERE Country IS NOT NULL AND Country <> ''
+         ORDER BY Country`
+    ).all();
+
+    return Response.json({
+        Maps: {
+            map_data,
+            trips: trips.results,
+            countries_visited: countries.results
+        }
     });
-
-  } catch (err) {
-    return new Response(
-      JSON.stringify({ error: err.message }),
-      { status: 500, headers: { "Content-Type": "application/json" } }
-    );
-  }
 }

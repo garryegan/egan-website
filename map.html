@@ -23,23 +23,37 @@
 
         <div class="map-wrapper">
             <div id="map"></div>
+
+            <!-- Correct caption ID -->
             <div id="mapCaption">Explore trips and locations using the legend.</div>
 
-               <button id="legendToggle">Legend</button>
+            <!-- Correct legend toggle ID -->
+            <button id="legendToggle">Legend</button>
 
-            <div id="legend" style="display:none;">
-            <!-- JS will inject <h3>Trips</h3> and legend items -->
-            </div>
+            <!-- Correct legend container ID -->
+            <div id="legend" style="display:none;"></div>
         </div>
     </div>
 
-    <!-- Static loader (if you use it for shared config / data) -->
-    <script src="/js/script_loader_static.js"></script>
+    <!-- Load D1 data BEFORE map.js -->
+    <script>
+        fetch("/api/map")
+            .then(r => r.json())
+            .then(data => {
+                window.allData = data;
+                // initMap() will run after Google Maps loads
+                if (window.google && window.google.maps) {
+                    initMap();
+                }
+            })
+            .catch(err => console.error("❌ Failed to load D1 map data:", err));
+    </script>
 
-    <!-- Google Maps API (callback required) -->
+    <!-- Map logic -->
+    <script src="/js/map.js"></script>
+
+    <!-- Google Maps loader (dynamic key fetch) -->
     <script src="/js/load-maps.js"></script>
 
-    <!-- Your map logic (defines initMap, builds markers, legend, etc.) -->
-    <script src="/js/map.js"></script>
 </body>
 </html>

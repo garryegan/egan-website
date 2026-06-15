@@ -1,0 +1,10 @@
+name = "egan-website"
+compatibility_date = "2024-01-01"
+
+# This MUST be above any tables
+pages_build_output_dir = "."
+
+[[d1_databases]]
+binding = "DB"
+database_name = "egan-db"
+database_id = "61a97a66-a527-4b3e-a490-afa97d65a7d6"
