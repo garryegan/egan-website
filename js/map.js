@@ -106,30 +106,33 @@ function createMarkers(features, tripNames, tripColors) {
             markerEl.style.transform = "scale(1)";
         });
 
-        // RESTORED ORIGINAL POPUP EXACTLY
-marker.addListener("gmp-click", () => {
-    const visitDate = feature.properties.visitdate || "Unknown date";
-    const description = feature.properties.description || "";
+        // POPUP WITH VISITDATE + DESCRIPTION
+        marker.addListener("gmp-click", () => {
+            const visitDate = feature.properties.visitdate || "Unknown date";
+            const description = feature.properties.description || "";
 
-    let html = `
-        <div style="max-width:260px; font-family:sans-serif;">
-            <h3 style="margin-top:0; color:#1a5276;">${name}</h3>
-            <p style="margin:4px 0;"><strong>Trip:</strong> ${trip}</p>
-            <p style="margin:4px 0;"><strong>Visited:</strong> ${visitDate}</p>
-    `;
+            let html = `
+                <div style="max-width:260px; font-family:sans-serif;">
+                    <h3 style="margin-top:0; color:#1a5276;">${name}</h3>
+                    <p style="margin:4px 0;"><strong>Trip:</strong> ${trip}</p>
+                    <p style="margin:4px 0;"><strong>Visited:</strong> ${visitDate}</p>
+            `;
 
-    if (description.trim() !== "") {
-        html += `
-            <p style="margin:4px 0;"><strong>Notes:</strong> ${description}</p>
-        `;
-    }
+            if (description.trim() !== "") {
+                html += `
+                    <p style="margin:4px 0;"><strong>Notes:</strong> ${description}</p>
+                `;
+            }
 
-    html += `</div>`;
+            html += `</div>`;
 
-    infoWindow.setContent(html);
-    infoWindow.open(map, marker);
-});
+            infoWindow.setContent(html);
+            infoWindow.open(map, marker);
+        });
 
+        bounds.extend(position);
+        return marker;
+    });
 
     map.fitBounds(bounds);
 }
