@@ -108,7 +108,7 @@ function createMarkers(features, tripNames, tripColors) {
 
         // RESTORED ORIGINAL POPUP EXACTLY
 marker.addListener("gmp-click", () => {
-    const visitDate = feature.properties.visitdate || "Unknown date";
+    const visitDate = feature.properties.Visitdate || "Unknown date";
     const description = feature.properties.description || "";
 
     let html = `
