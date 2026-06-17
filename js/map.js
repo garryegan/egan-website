@@ -107,24 +107,29 @@ function createMarkers(features, tripNames, tripColors) {
         });
 
         // RESTORED ORIGINAL POPUP EXACTLY
-        marker.addListener("gmp-click", () => {
-            const html = `
-                <div style="max-width:260px; font-family:sans-serif;">
-                    <h3 style="margin-top:0; color:#1a5276;">${name}</h3>
-                    <p style="margin:4px 0;"><strong>Trip:</strong> ${trip}</p>
-                    <p style="margin:4px 0;"><strong>Coordinates:</strong> ${position.lat.toFixed(3)}, ${position.lng.toFixed(3)}</p>
-                </div>
-            `;
-            infoWindow.setContent(html);
-            infoWindow.open(map, marker);
-        });
+marker.addListener("gmp-click", () => {
+    const visitDate = feature.properties.visitdate || "Unknown date";
+    const description = feature.properties.description || "";
 
-        bounds.extend(position);
-        return marker;
-    });
+    let html = `
+        <div style="max-width:260px; font-family:sans-serif;">
+            <h3 style="margin-top:0; color:#1a5276;">${name}</h3>
+            <p style="margin:4px 0;"><strong>Trip:</strong> ${trip}</p>
+            <p style="margin:4px 0;"><strong>Visited:</strong> ${visitDate}</p>
+    `;
 
-    map.fitBounds(bounds);
-}
+    if (description.trim() !== "") {
+        html += `
+            <p style="margin:4px 0;"><strong>Notes:</strong> ${description}</p>
+        `;
+    }
+
+    html += `</div>`;
+
+    infoWindow.setContent(html);
+    infoWindow.open(map, marker);
+});
+
 
 // ------------------------------------------------------------
 // FILTER MARKERS BY TRIP — unchanged
