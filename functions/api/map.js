@@ -4,14 +4,16 @@ export async function onRequest(context) {
     // 1) Load all map points
     const points = await db.prepare(
         `SELECT 
-            name,
-            Country,
-            latitude,
-            longitude,
-            TripID,
-            hide
-         FROM maps
-         WHERE hide IS NULL OR hide = 0`
+		name,
+		Country,
+		latitude,
+		longitude,
+		TripID,
+		VisitDate,
+		Description,
+		hide
+	FROM maps
+	WHERE hide IS NULL OR hide = 0`
     ).all();
 
     // Build GeoJSON FeatureCollection
@@ -21,11 +23,14 @@ export async function onRequest(context) {
             type: "Point",
             coordinates: [row.longitude, row.latitude]
         },
-        properties: {
-            name: row.name,
-            country: row.Country,
-            trip_id: row.TripID
-        }
+		properties: {
+			name: row.name,
+			country: row.Country,
+			trip_id: row.TripID,
+			visitdate: row.VisitDate,
+			description: row.Description
+		}
+
     }));
 
     const map_data = {
