@@ -24,7 +24,7 @@ export async function onRequest(context) {
             coordinates: [row.Longitude, row.Latitude]
         },
 		properties: {
-			name: row.name,
+			name: row.Name,
 			country: row.Country,
 			trip_id: row.TripID,
 			visitdate: row.VisitDate,
