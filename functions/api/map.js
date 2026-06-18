@@ -1,7 +1,7 @@
 export async function onRequest(context) {
     const db = context.env.DB;
 
-    // 1) Load all map points
+    // 1) Load all map points from D1
     const points = await db.prepare(
         `SELECT 
 		name,
