@@ -21,7 +21,7 @@ export async function onRequest(context) {
         type: "Feature",
         geometry: {
             type: "Point",
-            coordinates: [row.longitude, row.latitude]
+            coordinates: [row.Longitude, row.Latitude]
         },
 		properties: {
 			name: row.name,
