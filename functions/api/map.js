@@ -1,19 +1,21 @@
 export async function onRequest(context) {
     const db = context.env.DB;
 
-    // 1) Load all map points from D1
+    // 1) Load all map points from D1, excluding hidden trips
     const points = await db.prepare(
         `SELECT 
-		name,
-		Country,
-		latitude,
-		longitude,
-		TripID,
-		VisitDate,
-		Description,
-		hide
-	FROM maps
-	WHERE hide IS NULL OR hide = 0`
+            m.Name,
+            m.Country,
+            m.Latitude,
+            m.Longitude,
+            m.TripID,
+            m.VisitDate,
+            m.Description,
+            m.hide
+         FROM maps m
+         JOIN Trips t ON m.TripID = t.TripID
+         WHERE (m.hide IS NULL OR m.hide = 0)
+           AND t.Displayed = 0`
     ).all();
 
     // Build GeoJSON FeatureCollection
@@ -23,14 +25,13 @@ export async function onRequest(context) {
             type: "Point",
             coordinates: [row.Longitude, row.Latitude]
         },
-		properties: {
-			name: row.Name,
-			country: row.Country,
-			trip_id: row.TripID,
-			visitdate: row.VisitDate,
-			description: row.Description
-		}
-
+        properties: {
+            name: row.Name,
+            country: row.Country,
+            trip_id: row.TripID,
+            visitdate: row.VisitDate,
+            description: row.Description
+        }
     }));
 
     const map_data = {
@@ -38,23 +39,27 @@ export async function onRequest(context) {
         features
     };
 
-    // 2) Load trips from Trips (formerly IconColour)
+    // 2) Load trips for legend, excluding hidden trips
     const trips = await db.prepare(
         `SELECT 
             TripID,
             trip,
             icon_colour AS color,
-			description
+            description
          FROM Trips
+         WHERE Displayed = 0
          ORDER BY TripID`
     ).all();
 
-    // 3) DISTINCT countries visited
+    // 3) DISTINCT countries visited, excluding hidden trips
     const countries = await db.prepare(
-        `SELECT DISTINCT Country 
-         FROM maps
-         WHERE Country IS NOT NULL AND Country <> ''
-         ORDER BY Country`
+        `SELECT DISTINCT m.Country
+         FROM maps m
+         JOIN Trips t ON m.TripID = t.TripID
+         WHERE m.Country IS NOT NULL 
+           AND m.Country <> ''
+           AND t.Displayed = 0
+         ORDER BY m.Country`
     ).all();
 
     return Response.json({
