@@ -41,10 +41,10 @@ window.initMap = function () {
     });
 
     // --------------------------------------------------------
-    // CREATE MAP - centre at 7.227760, 134.355094
+    // CREATE MAP
     // --------------------------------------------------------
     window.map = new google.maps.Map(document.getElementById("map"), {
-        center: { lat: 7.0, lng: 134.0 },
+        center: { lat: 21.0, lng: 0.0 },
         zoom: 2.3,
         mapId: MAP_ID
     });
